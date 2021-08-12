@@ -74,9 +74,7 @@ const getPlayersByUserId = async (req, res, next) => {
 
   // if (!players || players.length === 0) {
   if (!userWithPlayers || userWithPlayers.players.length === 0) {
-    return next(
-      new HttpError("Could not find players for the provided user id.", 404)
-    );
+    return next(new HttpError("No se han encontrado jugadores", 404));
   }
 
   res.json({
