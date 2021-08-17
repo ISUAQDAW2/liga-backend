@@ -12,7 +12,7 @@ router.get("/user/:uid", playersControllers.getPlayersByUserId);
 
 router.get("/mercado", playersControllers.getPlayersMercado);
 
-router.get("/get/ofertasrealizadas", playersControllers.getPlayers);
+router.get("/top/ofertasrealizadas", playersControllers.getPlayers);
 
 router.use(checkAuth);
 
@@ -26,6 +26,22 @@ router.post(
   playersControllers.createPlayer
 );
 
+router.post(
+  "/discarded",
+  [
+    check("title").not().isEmpty(),
+    check("clausula").isLength({ min: 5 }),
+    check("address").not().isEmpty(),
+  ],
+  playersControllers.createDiscardedPlayer
+);
+
+router.patch(
+  "/transferible/:pid",
+  [check("transferible").not().isEmpty()],
+  playersControllers.updateTransferiblePlayer
+);
+
 router.patch(
   "/:pid",
   [check("title").not().isEmpty(), check("clausula").isLength({ min: 5 })],
@@ -33,5 +49,7 @@ router.patch(
 );
 
 router.delete("/:pid", playersControllers.deletePlayer);
+
+router.delete("/delete/:pid", playersControllers.deleteDiscardedPlayer);
 
 module.exports = router;

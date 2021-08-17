@@ -123,7 +123,7 @@ const signup = async (req, res, next) => {
     email,
     image:
       "https://i.pinimg.com/originals/37/21/0a/37210ad3c6870334ed728ee6d4040234.png",
-    division: "Primera",
+    division: "Quinta",
     password: hashedPassword,
     presupuesto: 100,
     players: [],

@@ -1,6 +1,6 @@
 const express = require("express");
 const { check } = require("express-validator");
-
+const checkAuth = require("../middleware/check-auth");
 const usersController = require("../controllers/users-controllers");
 
 const router = express.Router();
@@ -20,12 +20,14 @@ router.post(
   usersController.signup
 );
 
+router.post("/login", usersController.login);
+
+router.use(checkAuth);
+
 router.patch(
   "/pagarclausula/:uid",
   //[check("title").not().isEmpty(), check("clausula").isLength({ min: 5 })],
   usersController.updateUser
 );
-
-router.post("/login", usersController.login);
 
 module.exports = router;

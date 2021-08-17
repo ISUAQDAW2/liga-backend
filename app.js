@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const playersRoutes = require("./routes/players-routes");
 const ofertasRoutes = require("./routes/ofertas-routes");
 const usersRoutes = require("./routes/users-routes");
+const messagesRoutes = require("./routes/messages-routes");
 const HttpError = require("./models/http-error");
 
 const app = express();
@@ -25,6 +26,7 @@ app.use((req, res, next) => {
 app.use("/api/players", playersRoutes);
 app.use("/api/ofertas", ofertasRoutes);
 app.use("/api/users", usersRoutes);
+app.use("/api/messages", messagesRoutes);
 
 app.use((req, res, next) => {
   const error = new HttpError("Could not find this route.", 404);
@@ -38,8 +40,11 @@ app.use((error, req, res, next) => {
   res.status(error.code || 500);
   res.json({ message: error.message || "An unknown error occurred!" });
 });
+const db_username = process.env.DB_USER;
+const db_password = process.env.DB_PASSWORD;
+const db_name = process.env.DB_NAME;
 
-const connectUrl = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.taxmw.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+const connectUrl = `mongodb+srv://${db_username}:${db_password}@cluster0.taxmw.mongodb.net/${db_name}?retryWrites=true&w=majority`;
 const connectConfig = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
