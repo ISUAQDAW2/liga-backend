@@ -86,6 +86,33 @@ const getPlayersByUserId = async (req, res, next) => {
 };
 
 const createPlayer = async (req, res, next) => {
+  /* const userId = req.params.uid;
+
+  let user;
+  try {
+    user = await User.findById(userId);
+  } catch (err) {
+    const error = new HttpError(
+      "Algo fue mal, no se pudo encontrar al usuario.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!user) {
+    const error = new HttpError(
+      "No se ha encontrado a un usuario con ese id.",
+      404
+    );
+    return next(error);
+  }
+  if (user.players.length === 18) {
+    const error = new HttpError(
+      "Operación cancelada, no puede superar el límite de 18 jugadores en plantilla.",
+      404
+    );
+    return next(error);
+  } */
   const {
     title,
     clausula,
@@ -131,7 +158,13 @@ const createPlayer = async (req, res, next) => {
     return next(error);
   }
 
-  console.log(user);
+  if (user.players.length === 18) {
+    const error = new HttpError(
+      "Operación cancelada, no puede superar el límite de 18 jugadores en plantilla.",
+      404
+    );
+    return next(error);
+  }
 
   try {
     const sess = await mongoose.startSession();
