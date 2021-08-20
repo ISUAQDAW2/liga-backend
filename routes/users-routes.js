@@ -5,9 +5,6 @@ const usersController = require("../controllers/users-controllers");
 
 const router = express.Router();
 
-//router.get("/presupuesto/:uid", usersController.getUserPresupuesto);
-//router.get("/venderclausula/:uid", usersController.getUserById);
-
 router.get("/", usersController.getUsers);
 
 router.post(
@@ -24,10 +21,6 @@ router.post("/login", usersController.login);
 
 router.use(checkAuth);
 
-router.patch(
-  "/pagarclausula/:uid",
-  //[check("title").not().isEmpty(), check("clausula").isLength({ min: 5 })],
-  usersController.updateUser
-);
+router.patch("/pagarclausula/:uid", usersController.updateUser);
 
 module.exports = router;

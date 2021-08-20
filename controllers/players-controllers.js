@@ -4,15 +4,16 @@ const HttpError = require("../models/http-error");
 const Player = require("../models/player");
 const User = require("../models/user");
 const Oferta = require("../models/oferta");
-const { v4: uuidv4 } = require("uuid");
 
 const getPlayers = async (req, res, next) => {
-  //const userId = req.params.uid;
   let players;
   try {
-    players = await Player.find({}).populate("ofertas");
+    players = await Player.find({}).populate("ofertas").sort("-clausula");
   } catch (err) {
-    const error = new HttpError("Fetching users failed, please try again", 500);
+    const error = new HttpError(
+      "Fallo en la obtención de jugadores, inténtelo de nuevo",
+      500
+    );
     return next(error);
   }
   res.json({
@@ -25,9 +26,12 @@ const getPlayersMercado = async (req, res, next) => {
   try {
     players = await Player.find({
       $or: [{ transferible: true }, { team: "Sin equipo" }],
-    });
+    }).sort("-clausula");
   } catch (err) {
-    const error = new HttpError("Fetching users failed, please try again", 500);
+    const error = new HttpError(
+      "Fallo en la obtención de jugadores, inténtelo de nuevo",
+      500
+    );
     return next(error);
   }
   res.json({
@@ -43,7 +47,7 @@ const getPlayerById = async (req, res, next) => {
     player = await Player.findById(playerId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find a player.",
+      "Algo fue mal, no se pudo encontrar al jugador.",
       500
     );
     return next(error);
@@ -51,7 +55,7 @@ const getPlayerById = async (req, res, next) => {
 
   if (!player) {
     const error = new HttpError(
-      "Could not find player for the provided id.",
+      "No se ha encontrado a un jugador con ese id.",
       404
     );
     return next(error);
@@ -63,22 +67,16 @@ const getPlayerById = async (req, res, next) => {
 const getPlayersByUserId = async (req, res, next) => {
   const userId = req.params.uid;
 
-  // let players;
   let userWithPlayers;
   try {
     userWithPlayers = await User.findById(userId).populate("players");
   } catch (err) {
     const error = new HttpError(
-      "Fetching players failed, please try again later.",
+      "Fallo en la obtención de jugadores, inténtelo de nuevo.",
       500
     );
     return next(error);
   }
-
-  // if (!players || players.length === 0) {
-  /* if (!userWithPlayers || userWithPlayers.players.length === 0) {
-    return next(new HttpError("No se han encontrado jugadores", 404));
-  } */
 
   res.json({
     players: userWithPlayers.players.map((player) =>
@@ -88,13 +86,6 @@ const getPlayersByUserId = async (req, res, next) => {
 };
 
 const createPlayer = async (req, res, next) => {
-  /* const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(
-      new HttpError("Invalid inputs passed, please check your data.", 422)
-    );
-  }
- */
   const {
     title,
     clausula,
@@ -129,14 +120,14 @@ const createPlayer = async (req, res, next) => {
     user = await User.findById(creator);
   } catch (err) {
     const error = new HttpError(
-      "Creating player failed, please try again.",
+      "Fallo en la creación del jugador, inténtelo de nuevo.",
       500
     );
     return next(error);
   }
 
   if (!user) {
-    const error = new HttpError("Could not find user for provided id.", 404);
+    const error = new HttpError("No se encontró un usuario con ese id", 404);
     return next(error);
   }
 
@@ -151,7 +142,7 @@ const createPlayer = async (req, res, next) => {
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
-      "Creating player failed, please try again.",
+      "La creación del jugador falló, inténtelo de nuevo.",
       500
     );
     return next(error);
@@ -199,7 +190,7 @@ const createDiscardedPlayer = async (req, res, next) => {
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
-      "Creating player failed, please try again.",
+      "La creación del jugador falló, inténtelo de nuevo",
       500
     );
     return next(error);
@@ -209,13 +200,6 @@ const createDiscardedPlayer = async (req, res, next) => {
 };
 
 const updatePlayer = async (req, res, next) => {
-  /* const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(
-      new HttpError("Invalid inputs passed, please check your data.", 422)
-    );
-  } */
-
   const { clausula } = req.body;
   const playerId = req.params.pid;
 
@@ -311,13 +295,6 @@ const updatePlayer = async (req, res, next) => {
 };
 
 const updateTransferiblePlayer = async (req, res, next) => {
-  /* const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(
-      new HttpError("Invalid inputs passed, please check your data.", 422)
-    );
-  } */
-
   const { transferible, marketValue } = req.body;
   const playerId = req.params.pid;
 
@@ -326,7 +303,7 @@ const updateTransferiblePlayer = async (req, res, next) => {
     player = await Player.findById(playerId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not update player.",
+      "Algo fue mal, no se pudo actualizar al jugador.",
       500
     );
     return next(error);
@@ -354,7 +331,7 @@ const updateTransferiblePlayer = async (req, res, next) => {
     await player.save();
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not update player.",
+      "Algo fue mal, no se pudo actualizar al jugador.",
       500
     );
     return next(error);
@@ -373,24 +350,20 @@ const deletePlayer = async (req, res, next) => {
     ofertasPlayer = await Oferta.find({ playerId: playerId });
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not delete player.",
+      "Algo fue mal, no se pudo eliminar al jugador.",
       500
     );
     return next(error);
   }
 
   if (!player) {
-    const error = new HttpError("Could not find player for this id.", 404);
+    const error = new HttpError(
+      "No se ha encontrado el jugador con ese id",
+      404
+    );
     return next(error);
   }
 
-  /* if (player.creator.id !== req.userData.userId) {
-    const error = new HttpError(
-      "No estás autorizado para realizar esta gestión sobre el jugador.",
-      401
-    );
-    return next(error);
-  } */
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -403,7 +376,7 @@ const deletePlayer = async (req, res, next) => {
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not delete player.",
+      "Algo fue mal, no se pudo eliminar al jugador.",
       500
     );
     return next(error);
@@ -421,24 +394,17 @@ const deleteDiscardedPlayer = async (req, res, next) => {
     player = await Player.findById(playerId).populate("creator");
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not delete player.",
+      "Algo fue mal, no se pudo eliminar al jugador.",
       500
     );
     return next(error);
   }
 
   if (!player) {
-    const error = new HttpError("Could not find player for this id.", 404);
+    const error = new HttpError("No se encontró un jugador para ese id.", 404);
     return next(error);
   }
 
-  /* if (player.creator.id !== req.userData.userId) {
-    const error = new HttpError(
-      "No estás autorizado para realizar esta gestión sobre el jugador.",
-      401
-    );
-    return next(error);
-  } */
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -446,7 +412,7 @@ const deleteDiscardedPlayer = async (req, res, next) => {
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not delete player.",
+      "Algo fue mal, no se pudo eliminar al jugador.",
       500
     );
     return next(error);

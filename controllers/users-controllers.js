@@ -4,50 +4,21 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 
-/* const getUserPresupuesto = async (req, res, next) => {
-  const userId = req.params.uid;
-
-  let player;
-  try {
-    player = await User.findById(userId);
-  } catch (err) {
-    const error = new HttpError(
-      "Something went wrong, could not find a player.",
-      500
-    );
-    return next(error);
-  }
-
-  if (!player) {
-    const error = new HttpError(
-      "Could not find player for the provided id.",
-      404
-    );
-    return next(error);
-  }
-
-  res.json({ player: player.toObject({ getters: true }) });
-}; */
-
 const getUsers = async (req, res, next) => {
   let users;
   try {
     users = await User.find({}, "-password");
   } catch (err) {
-    const error = new HttpError("Fetching users failed, please try again", 500);
+    const error = new HttpError(
+      "Algo falló en la obtención de usuarios, inténtelo de nuevo",
+      500
+    );
     return next(error);
   }
   res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
 const updateUser = async (req, res, next) => {
-  /* const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(
-      new HttpError("Invalid inputs passed, please check your data.", 422)
-    );
-  } */
-
   const { presupuesto } = req.body;
   const userId = req.params.uid;
 
@@ -56,7 +27,7 @@ const updateUser = async (req, res, next) => {
     user = await User.findById(userId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not update user.",
+      "Algo fue mal, no se pudo actualizar el usuario.",
       500
     );
     return next(error);
@@ -68,7 +39,7 @@ const updateUser = async (req, res, next) => {
     await user.save();
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not user player.",
+      "Algo fue mal, no se pudo guardar la información.",
       500
     );
     return next(error);
@@ -81,7 +52,7 @@ const signup = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
-      new HttpError("Invalid inputs passed, please check your data.", 422)
+      new HttpError("Credenciales inválidas, por favor, revíselas.", 422)
     );
   }
 
@@ -92,7 +63,7 @@ const signup = async (req, res, next) => {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
     const error = new HttpError(
-      "Signing up failed, please try again later.",
+      "El registro del usuario falló, inténtelo de nuevo.",
       500
     );
     return next(error);
@@ -100,7 +71,7 @@ const signup = async (req, res, next) => {
 
   if (existingUser) {
     const error = new HttpError(
-      "User exists already, please login instead.",
+      "El usuario ya existe, inicie sesión en su lugar.",
       422
     );
     return next(error);
@@ -111,7 +82,7 @@ const signup = async (req, res, next) => {
     hashedPassword = await bcrypt.hash(password, 12);
   } catch (err) {
     const error = new HttpError(
-      "Could not create user, please try again.",
+      "No se pudo crear al usuario, inténtelo de nuevo.",
       500
     );
     return next(error);
@@ -121,11 +92,10 @@ const signup = async (req, res, next) => {
     name,
     equipo: "Sin equipo",
     email,
-    image:
-      "https://i.pinimg.com/originals/37/21/0a/37210ad3c6870334ed728ee6d4040234.png",
-    division: "Quinta",
+    image: "https://i.imgur.com/mhqxl7l.png",
+    division: "Cuarta",
     password: hashedPassword,
-    presupuesto: 100,
+    presupuesto: 6000,
     players: [],
   });
 
@@ -133,7 +103,7 @@ const signup = async (req, res, next) => {
     await createdUser.save();
   } catch (err) {
     const error = new HttpError(
-      "Signing up failed, please try again later.",
+      "El registro del usuario falló, inténtelo de nuevo.",
       500
     );
     return next(error);
@@ -148,7 +118,7 @@ const signup = async (req, res, next) => {
     );
   } catch (err) {
     const error = new HttpError(
-      "Signing up failed, please try again later.",
+      "El registro del usuario falló, inténtelo de nuevo",
       500
     );
     return next(error);
@@ -174,7 +144,7 @@ const login = async (req, res, next) => {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
     const error = new HttpError(
-      "Logging in failed, please try again later.",
+      "El inicio de sesión falló, inténtelo de nuevo.",
       500
     );
     return next(error);
@@ -182,7 +152,7 @@ const login = async (req, res, next) => {
 
   if (!existingUser) {
     const error = new HttpError(
-      "Invalid credentials, could not log you in.",
+      "Credenciales incorrectas, no se pudo iniciar sesión.",
       403
     );
     return next(error);
@@ -193,7 +163,7 @@ const login = async (req, res, next) => {
     isValidPassword = await bcrypt.compare(password, existingUser.password);
   } catch (err) {
     const error = new HttpError(
-      "Could not log you in, please check your credentials and try again.",
+      "No se pudo iniciar sesión, compruebe que sus credenciales son correctas.",
       500
     );
     return next(error);
@@ -201,7 +171,7 @@ const login = async (req, res, next) => {
 
   if (!isValidPassword) {
     const error = new HttpError(
-      "Invalid credentials, could not log you in.",
+      "Credenciales incorrectas, no se pudo iniciar sesión.",
       403
     );
     return next(error);
@@ -216,7 +186,7 @@ const login = async (req, res, next) => {
     );
   } catch (err) {
     const error = new HttpError(
-      "Logging in failed, please try again later.",
+      "El inicio de sesión falló, inténtelo de nuevo.",
       500
     );
     return next(error);
@@ -237,4 +207,3 @@ exports.getUsers = getUsers;
 exports.signup = signup;
 exports.login = login;
 exports.updateUser = updateUser;
-//exports.getUserPresupuesto = getUserPresupuesto;

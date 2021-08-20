@@ -25,11 +25,7 @@ router.post(
   ofertasControllers.createOferta
 );
 
-router.patch(
-  "/:oid/:clause/:q/:pid",
-  /* [check("title").not().isEmpty(), check("clausula").isLength({ min: 5 })], */
-  ofertasControllers.updateOferta
-);
+router.patch("/:oid/:clause/:q/:pid", ofertasControllers.updateOferta);
 
 router.delete("/:oid", ofertasControllers.deleteOferta);
 
