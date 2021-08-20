@@ -208,7 +208,7 @@ const updatePlayer = async (req, res, next) => {
     player = await Player.findById(playerId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not update player.",
+      "Algo fue mal, no se pudo actualizar al jugador.",
       500
     );
     return next(error);
@@ -216,7 +216,7 @@ const updatePlayer = async (req, res, next) => {
 
   if (player.creator.toString() !== req.userData.userId) {
     const error = new HttpError(
-      "No estás autorizado para realizar la operación.",
+      "No está autorizado para realizar la operación.",
       401
     );
     return next(error);
@@ -234,7 +234,7 @@ const updatePlayer = async (req, res, next) => {
     user = await User.findById(req.userData.userId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find a player.",
+      "Algo fue mal, no se pudo encontrar al jugador.",
       500
     );
     return next(error);
@@ -242,7 +242,7 @@ const updatePlayer = async (req, res, next) => {
 
   if (!user) {
     const error = new HttpError(
-      "Could not find user for the provided id.",
+      "No se pudo encontrar al usuario con ese id.",
       404
     );
     return next(error);
@@ -255,7 +255,7 @@ const updatePlayer = async (req, res, next) => {
     userWithOfertas = await Oferta.find({ ofertanteId: req.userData.userId });
   } catch (err) {
     const error = new HttpError(
-      "Fetching ofertas failed, please try again later.",
+      "La obtención de ofertas falló, inténtelo de nuevo.",
       500
     );
     return next(error);
@@ -285,7 +285,7 @@ const updatePlayer = async (req, res, next) => {
     await player.save();
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not update player.",
+      "Algo fue mal, no se pudo actualizar al jugador.",
       500
     );
     return next(error);
