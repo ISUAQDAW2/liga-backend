@@ -420,6 +420,7 @@ const deletePlayer = async (req, res, next) => {
 
 const deleteDiscardedPlayer = async (req, res, next) => {
   const playerId = req.params.pid;
+  const userId = req.params.uid;
 
   let player;
 
@@ -435,6 +436,30 @@ const deleteDiscardedPlayer = async (req, res, next) => {
 
   if (!player) {
     const error = new HttpError("No se encontró un jugador para ese id.", 404);
+    return next(error);
+  }
+  let user;
+
+  try {
+    user = await User.findById(userId);
+  } catch (err) {
+    const error = new HttpError(
+      "Algo fue mal, no se pudo encontrar al usuario.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!user) {
+    const error = new HttpError("No se encontró un usuario para ese id.", 404);
+    return next(error);
+  }
+
+  if (user.players.length === 18) {
+    const error = new HttpError(
+      "Operación cancelada, no puede superar el límite de 18 jugadores en plantilla.",
+      404
+    );
     return next(error);
   }
 

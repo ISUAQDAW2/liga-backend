@@ -50,6 +50,6 @@ router.patch(
 
 router.delete("/:pid", playersControllers.deletePlayer);
 
-router.delete("/delete/:pid", playersControllers.deleteDiscardedPlayer);
+router.delete("/delete/:pid/:uid", playersControllers.deleteDiscardedPlayer);
 
 module.exports = router;
