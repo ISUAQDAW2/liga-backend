@@ -449,6 +449,41 @@ const deletePlayer = async (req, res, next) => {
     return next(error);
   }
 
+  let user;
+  try {
+    user = await User.findById(req.userData.userId);
+  } catch (err) {
+    const error = new HttpError(
+      "Fallo en la creación del jugador, inténtelo de nuevo.",
+      500
+    );
+    return next(error);
+  }
+
+  if (req.userData.userId !== player.creator.id) {
+    let userWithOfertas;
+    try {
+      userWithOfertas = await Oferta.find({ ofertanteId: req.userData.userId });
+    } catch (err) {
+      const error = new HttpError(
+        "La obtención de ofertas falló, inténtelo de nuevo.",
+        500
+      );
+      return next(error);
+    }
+    const filteredOffers = userWithOfertas.filter(
+      (oferta) => oferta.playerId.toString() !== playerId.toString()
+    );
+
+    if (user.players.length + filteredOffers.length >= 18) {
+      const error = new HttpError(
+        "Operación cancelada, ya que el número de jugadores en plantilla más las ofertas realizadas pendientes sería mayor a 18.",
+        404
+      );
+      return next(error);
+    }
+  }
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
