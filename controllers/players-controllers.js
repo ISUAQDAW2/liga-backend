@@ -477,7 +477,7 @@ const deletePlayer = async (req, res, next) => {
 
     if (user.players.length + filteredOffers.length >= 18) {
       const error = new HttpError(
-        "Operación cancelada, ya que el número de jugadores en plantilla más las ofertas realizadas pendientes sería mayor a 18.",
+        "Operación cancelada, ya que el número de jugadoreeees en plantilla más las ofertas realizadas pendientes sería mayor a 18.",
         404
       );
       return next(error);
