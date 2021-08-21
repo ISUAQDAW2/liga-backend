@@ -436,7 +436,7 @@ const deletePlayer = async (req, res, next) => {
     return next(error);
   }
 
-  if (player.creator.players.length === 13) {
+  if (player.creator.players.length <= 13) {
     const error = new HttpError(
       "Operación cancelada, ya que el número de jugadores en plantilla sería menor a 13.",
       404
