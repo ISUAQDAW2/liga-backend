@@ -158,9 +158,20 @@ const createPlayer = async (req, res, next) => {
     return next(error);
   }
 
-  if (user.players.length === 18) {
+  let userWithOfertas;
+  try {
+    userWithOfertas = await Oferta.find({ ofertanteId: creator });
+  } catch (err) {
     const error = new HttpError(
-      "Operación cancelada, no puede superar el límite de 18 jugadores en plantilla.",
+      "La obtención de ofertas falló, inténtelo de nuevo.",
+      500
+    );
+    return next(error);
+  }
+
+  if (user.players.length + userWithOfertas.length >= 18) {
+    const error = new HttpError(
+      "Operación cancelada, ya que el número de jugadores en plantilla más las ofertas realizadas pendientes sería mayor a 18.",
       404
     );
     return next(error);
@@ -185,6 +196,7 @@ const createPlayer = async (req, res, next) => {
 };
 
 const createDiscardedPlayer = async (req, res, next) => {
+  const userId = req.params.uid;
   const {
     title,
     clausula,
@@ -215,6 +227,33 @@ const createDiscardedPlayer = async (req, res, next) => {
     ofertas: [],
     creatorName,
   });
+
+  let user;
+  try {
+    user = await User.findById(userId);
+  } catch (err) {
+    const error = new HttpError(
+      "Algo fue mal, no se pudo encontrar al jugador.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!user) {
+    const error = new HttpError(
+      "No se pudo encontrar al usuario con ese id.",
+      404
+    );
+    return next(error);
+  }
+
+  if (user.players.length <= 13) {
+    const error = new HttpError(
+      "Operación cancelada, ya que se quedaría con menos de 13 jugadores.",
+      404
+    );
+    return next(error);
+  }
 
   try {
     const sess = await mongoose.startSession();
@@ -397,6 +436,14 @@ const deletePlayer = async (req, res, next) => {
     return next(error);
   }
 
+  if (player.creator.players.length === 13) {
+    const error = new HttpError(
+      "Operación cancelada, ya que el número de jugadores en plantilla sería menor a 13.",
+      404
+    );
+    return next(error);
+  }
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -455,9 +502,20 @@ const deleteDiscardedPlayer = async (req, res, next) => {
     return next(error);
   }
 
-  if (user.players.length === 18) {
+  let userWithOfertas;
+  try {
+    userWithOfertas = await Oferta.find({ ofertanteId: userId });
+  } catch (err) {
     const error = new HttpError(
-      "Operación cancelada, no puede superar el límite de 18 jugadores en plantilla.",
+      "La obtención de ofertas falló, inténtelo de nuevo.",
+      500
+    );
+    return next(error);
+  }
+
+  if (user.players.length + userWithOfertas.length >= 18) {
+    const error = new HttpError(
+      "Operación cancelada, ya que el número de jugadores en plantilla más las ofertas realizadas pendientes sería mayor a 18.",
       404
     );
     return next(error);

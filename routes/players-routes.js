@@ -27,7 +27,7 @@ router.post(
 );
 
 router.post(
-  "/discarded",
+  "/discarded/:uid",
   [
     check("title").not().isEmpty(),
     check("clausula").isLength({ min: 5 }),
