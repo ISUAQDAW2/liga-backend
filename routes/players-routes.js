@@ -17,7 +17,7 @@ router.get("/top/ofertasrealizadas", playersControllers.getPlayers);
 router.use(checkAuth);
 
 router.post(
-  "/",
+  "/:pid",
   [
     check("title").not().isEmpty(),
     check("clausula").isLength({ min: 5 }),

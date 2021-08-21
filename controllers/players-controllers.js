@@ -86,6 +86,7 @@ const getPlayersByUserId = async (req, res, next) => {
 };
 
 const createPlayer = async (req, res, next) => {
+  const playerId = req.params.pid;
   /* const userId = req.params.uid;
 
   let user;
@@ -169,7 +170,11 @@ const createPlayer = async (req, res, next) => {
     return next(error);
   }
 
-  if (user.players.length + userWithOfertas.length >= 18) {
+  const filteredOffers = userWithOfertas.filter(
+    (oferta) => oferta.playerId.toString() !== playerId.toString()
+  );
+
+  if (user.players.length + filteredOffers.length >= 18) {
     const error = new HttpError(
       "Operación cancelada, ya que el número de jugadores en plantilla más las ofertas realizadas pendientes sería mayor a 18.",
       404
