@@ -178,6 +178,14 @@ const createOferta = async (req, res, next) => {
     sum = 0;
   }
 
+  if (userWithOfertas.length + user.players.length >= 18) {
+    const error = new HttpError(
+      "No se pudo enviar la oferta, ya que las ofertas realizadas más el número de jugadores en plantilla sería mayor a 18.",
+      404
+    );
+    return next(error);
+  }
+
   const debt = Number(quantity) + Number(sum);
 
   if (Number(userPresupuesto) < debt) {
