@@ -90,9 +90,9 @@ const signup = async (req, res, next) => {
 
   const createdUser = new User({
     name,
-    equipo: "Sin equipo",
+    equipo: "Equipo no asignado",
     email,
-    image: "https://i.imgur.com/mhqxl7l.png",
+    image: "https://imgur.com/2FS8g0d.png",
     division: "Cuarta",
     password: hashedPassword,
     presupuesto: 6000,
