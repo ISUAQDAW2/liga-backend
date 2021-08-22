@@ -3,6 +3,7 @@ const HttpError = require("../models/http-error");
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const Player = require("../models/player");
 
 const getUsers = async (req, res, next) => {
   let users;
@@ -108,6 +109,31 @@ const signup = async (req, res, next) => {
     );
     return next(error);
   }
+  let players;
+  try {
+    players = await Player.find({}).populate("ofertas");
+  } catch (err) {
+    const error = new HttpError(
+      "Fallo en la obtención de jugadores, inténtelo de nuevo",
+      500
+    );
+    return next(error);
+  }
+
+  const filteredOffers = players.filter(
+    (player) =>
+      player.ofertas.length > 0 &&
+      player.creator.toString() === createdUser.id.toString()
+  );
+
+  let hasReceivedOffers;
+
+  if (filteredOffers.length > 0) {
+    hasReceivedOffers = true;
+  }
+  if (!filteredOffers || filteredOffers.length === 0) {
+    hasReceivedOffers = false;
+  }
 
   let token;
   try {
@@ -132,6 +158,7 @@ const signup = async (req, res, next) => {
     name: createdUser.name,
     equipo: createdUser.equipo,
     image: createdUser.image,
+    hasOffers: hasReceivedOffers,
   });
 };
 
@@ -177,6 +204,32 @@ const login = async (req, res, next) => {
     return next(error);
   }
 
+  let players;
+  try {
+    players = await Player.find({}).populate("ofertas");
+  } catch (err) {
+    const error = new HttpError(
+      "Fallo en la obtención de jugadores, inténtelo de nuevo",
+      500
+    );
+    return next(error);
+  }
+
+  const filteredOffers = players.filter(
+    (player) =>
+      player.ofertas.length > 0 &&
+      player.creator.toString() === existingUser.id.toString()
+  );
+
+  let hasReceivedOffers;
+
+  if (filteredOffers.length > 0) {
+    hasReceivedOffers = true;
+  }
+  if (!filteredOffers || filteredOffers.length === 0) {
+    hasReceivedOffers = false;
+  }
+
   let token;
   try {
     token = jwt.sign(
@@ -200,6 +253,7 @@ const login = async (req, res, next) => {
     image: existingUser.image,
     equipo: existingUser.equipo,
     name: existingUser.name,
+    hasOffers: hasReceivedOffers,
   });
 };
 

@@ -127,6 +127,42 @@ const getOfertasByPlayerId = async (req, res, next) => {
   });
 };
 
+const getReceivedOffers = async (req, res, next) => {
+  let players;
+  try {
+    players = await Player.find({}).populate("ofertas");
+  } catch (err) {
+    const error = new HttpError(
+      "Fallo en la obtención de jugadores, inténtelo de nuevo",
+      500
+    );
+    return next(error);
+  }
+
+  const filteredOffers = players.filter(
+    (player) =>
+      player.ofertas.length > 0 &&
+      player.creator.toString() === req.userData.userId.toString()
+  );
+
+  let hasReceivedOffers;
+
+  if (filteredOffers.length > 0) {
+    hasReceivedOffers = true;
+  }
+  if (!filteredOffers || filteredOffers.length === 0) {
+    hasReceivedOffers = false;
+  }
+
+  res.json(
+    /* players: filteredOffers?.map((player) =>
+      player.toObject({ getters: true })
+    ), */
+    hasReceivedOffers
+    /* hasOffers: hasReceivedOffers.toString(), */
+  );
+};
+
 const createOferta = async (req, res, next) => {
   const quantity = req.params.q;
   const playerClause = req.params.clause;
@@ -389,3 +425,4 @@ exports.updateOferta = updateOferta;
 exports.deleteOferta = deleteOferta;
 exports.getOfertasMercado = getOfertasMercado;
 exports.getOfertasByUserId = getOfertasByUserId;
+exports.getReceivedOffers = getReceivedOffers;

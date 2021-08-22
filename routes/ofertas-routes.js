@@ -14,6 +14,7 @@ router.get("/player/:pid", ofertasControllers.getOfertasByPlayerId);
 router.use(checkAuth);
 
 router.get("/get/:q/:pid", ofertasControllers.getOfertasByUserId);
+router.get("/get/receivedOffers", ofertasControllers.getReceivedOffers);
 
 router.post(
   "/:clause/:q",
