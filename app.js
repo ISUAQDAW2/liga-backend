@@ -29,7 +29,7 @@ app.use("/api/users", usersRoutes);
 app.use("/api/messages", messagesRoutes);
 
 app.use((req, res, next) => {
-  const error = new HttpError("Could not find this route.", 404);
+  const error = new HttpError("No se ha podido encontrar la ruta.", 404);
   throw error;
 });
 
@@ -38,7 +38,7 @@ app.use((error, req, res, next) => {
     return next(error);
   }
   res.status(error.code || 500);
-  res.json({ message: error.message || "An unknown error occurred!" });
+  res.json({ message: error.message || "Ha ocurrido un error" });
 });
 const db_username = process.env.DB_USER;
 const db_password = process.env.DB_PASSWORD;

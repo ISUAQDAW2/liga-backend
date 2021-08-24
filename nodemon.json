@@ -1,7 +1,7 @@
 {
   "env": {
-    "DB_USER": "isma",
-    "DB_PASSWORD": "omG1jIzC",
+    "DB_USER": "",
+    "DB_PASSWORD": "",
     "DB_NAME": "mern",
     "JWT_KEY": "supersecret_dont_share"
   }

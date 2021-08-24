@@ -128,6 +128,7 @@ const getOfertasByPlayerId = async (req, res, next) => {
 };
 
 const getReceivedOffers = async (req, res, next) => {
+  const userId = req.params.uid;
   let players;
   try {
     players = await Player.find({}).populate("ofertas");
@@ -142,7 +143,7 @@ const getReceivedOffers = async (req, res, next) => {
   const filteredOffers = players.filter(
     (player) =>
       player.ofertas.length > 0 &&
-      player.creator.toString() === req.userData.userId.toString()
+      player.creator.toString() === userId.toString()
   );
 
   let hasReceivedOffers;
@@ -154,13 +155,7 @@ const getReceivedOffers = async (req, res, next) => {
     hasReceivedOffers = false;
   }
 
-  res.json(
-    /* players: filteredOffers?.map((player) =>
-      player.toObject({ getters: true })
-    ), */
-    hasReceivedOffers
-    /* hasOffers: hasReceivedOffers.toString(), */
-  );
+  res.json(hasReceivedOffers);
 };
 
 const createOferta = async (req, res, next) => {

@@ -10,11 +10,11 @@ router.get("/mercado", ofertasControllers.getOfertasMercado);
 router.get("/:pid", ofertasControllers.getOfertaById);
 
 router.get("/player/:pid", ofertasControllers.getOfertasByPlayerId);
+router.get("/get/receivedOffers/:uid", ofertasControllers.getReceivedOffers);
 
 router.use(checkAuth);
 
 router.get("/get/:q/:pid", ofertasControllers.getOfertasByUserId);
-router.get("/get/receivedOffers", ofertasControllers.getReceivedOffers);
 
 router.post(
   "/:clause/:q",
